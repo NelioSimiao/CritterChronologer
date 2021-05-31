@@ -55,6 +55,7 @@ public class ScheduleController {
     @GetMapping("/employee/{employeeId}")
     public List<ScheduleDTO> getScheduleForEmployee(@PathVariable long employeeId) {
         List<Schedule> schedule = scheduleService.findScheduleByEmployeeId(employeeId);
+
         return  toScheduleDTOs(schedule);
     }
 
@@ -68,19 +69,27 @@ public class ScheduleController {
         Schedule schedule = new Schedule();
         BeanUtils.copyProperties(scheduleDTO, schedule);
 
-        if (scheduleDTO.getPetIds().size()!= 0) {
-            for(Long pedId : scheduleDTO.getPetIds()){
-                Pet pet = petService.getPetById(pedId);
-                schedule.getPets().add(pet);
+        List<Long> petIds = scheduleDTO.getPetIds();
+        List<Long> employeeIds = scheduleDTO.getEmployeeIds();
+
+        List<Pet> petList = new ArrayList<>();
+        if(petIds.size() != 0){
+            for(Long id : petIds){
+                Pet pet = petService.getPetById(id);
+                petList.add(pet);
             }
         }
-        if (scheduleDTO.getEmployeeIds().size()!= 0) {
-            for(Long employeeId : scheduleDTO.getEmployeeIds()){
-                Employee employee = employeeService.getEmployeeById(employeeId);
-                employee.setSkills(scheduleDTO.getActivities());
-                schedule.getEmployees().add(employee);
+
+        List<Employee> employeeList = new ArrayList<>();
+        if(petIds.size() != 0){
+            for(Long id : employeeIds){
+                Employee employee = employeeService.getEmployeeById(id);
+                employeeList.add(employee);
             }
         }
+
+        schedule.setEmployees(employeeList);
+        schedule.setPets(petList);
 
         return schedule;
     }
@@ -89,20 +98,24 @@ public class ScheduleController {
         ScheduleDTO scheduleDTO = new ScheduleDTO();
         BeanUtils.copyProperties(schedule, scheduleDTO);
 
+        List<Pet> petList = schedule.getPets();
+        List<Employee> employeeList = schedule.getEmployees();
+
         List<Long> petIds = new ArrayList<>();
-        if(schedule.getPets().size() != 0){
-            for(Pet pet : schedule.getPets()){
-                petIds.add(pet.getId());
-            }
-        }
-        List<Long> employeeIds = new ArrayList<>();
-        if(schedule.getEmployees().size() != 0){
-            for(Employee employee : schedule.getEmployees()){
-                employeeIds.add(employee.getId());
-                scheduleDTO.getActivities().addAll(employee.getSkills());
+        if(petList.size() != 0){
+            for(Pet p : petList){
+                petIds.add(p.getId());
             }
         }
 
+        List<Long> employeeIds = new ArrayList<>();
+        if(employeeList.size() != 0){
+            for(Employee e : employeeList){
+                employeeIds.add(e.getId());
+            }
+        }
+        scheduleDTO.setPetIds(petIds);
+        scheduleDTO.setEmployeeIds(employeeIds);
 
         scheduleDTO.setPetIds(petIds);
         scheduleDTO.setEmployeeIds(employeeIds);

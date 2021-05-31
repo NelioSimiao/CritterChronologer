@@ -9,6 +9,7 @@ import com.udacity.jdnd.course3.critter.model.Employee;
 import com.udacity.jdnd.course3.critter.model.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
+import com.udacity.jdnd.course3.critter.service.PetService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,10 @@ public class UserController {
 
     @Autowired
     EmployeeService employeeService;
+
+
+    @Autowired
+    PetService petService;
 
 
     @PostMapping("/customer")
@@ -102,17 +107,32 @@ public class UserController {
     public CustomerDTO toCustomerDTO(Customer customer) {
         CustomerDTO customerDTO = new CustomerDTO();
         BeanUtils.copyProperties(customer, customerDTO);
+        List<Pet> pets = customer.getPets();
 
-        for (Pet pet : customer.getPets()) {
-            customerDTO.getPetIds().add(pet.getId());
+        List<Long> petIds = new ArrayList<>();
+        if(pets.size() != 0){
+            for(Pet p : pets){
+                Long id = p.getId();
+                petIds.add(id);
+            }
         }
-
+        customerDTO.setPetIds(petIds);
         return customerDTO;
     }
 
     public Customer toCustomer(CustomerDTO customerDTO) {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customerDTO, customer);
+        List<Long> petIds = customerDTO.getPetIds();
+
+        List<Pet> pets = new ArrayList<>();
+        if(petIds != null && petIds.size() != 0){
+            for(Long id : petIds){
+                pets.add(petService.getPetById(id));
+            }
+        }
+        customer.setPets(pets);
+
         return customer;
     }
     private List<CustomerDTO> toCustomerDTOs(List<Customer> customerList) {

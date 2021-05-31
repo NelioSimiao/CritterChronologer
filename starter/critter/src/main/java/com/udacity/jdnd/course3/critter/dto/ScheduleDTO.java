@@ -16,7 +16,7 @@ public class ScheduleDTO {
     private List<Long> employeeIds;
     private List<Long> petIds;
     private LocalDate date;
-    private Set<EmployeeSkill> activities= new HashSet<>();
+    private Set<EmployeeSkill> activities;
 
     public List<Long> getEmployeeIds() {
         return employeeIds;

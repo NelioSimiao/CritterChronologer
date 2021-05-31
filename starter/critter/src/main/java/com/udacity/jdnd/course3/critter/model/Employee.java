@@ -8,11 +8,11 @@ import java.util.Set;
 @Entity
 public class Employee extends User{
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = EmployeeSkill.class)
     @Enumerated(EnumType.STRING)
     private Set<EmployeeSkill> skills =new HashSet<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = DayOfWeek.class)
     @Enumerated(EnumType.STRING)
     private Set<DayOfWeek> daysAvailable =new HashSet<>();
 
