@@ -7,6 +7,7 @@ import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Service
+@Transactional
 public class EmployeeServiceImp implements  EmployeeService {
 
     @Autowired
